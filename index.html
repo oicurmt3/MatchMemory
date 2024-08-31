@@ -82,11 +82,22 @@ h1 {
     align-items: center;
 }
 .control-group label {
-    margin-bottom: 5px;
+    margin-bottom: 0px;
     font-size: 1.5em;
     color: #333;
     cursor: help;
 }
+
+.control-group select {
+    margin-top: -10; /* Remove any top margin */
+}
+
+.control-group {
+    gap: 0px; /* Reduce the gap between icon and dropdown */
+}
+
+
+
 select {
     padding: 5px;
     font-size: 1em;
@@ -414,7 +425,7 @@ select, button {
     <span><i class="material-icons">timer</i> <span id="timer">00:00</span></span>
 </div>
 
-<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#008a09', 'Z8Z6P25B8');kofiwidget2.draw();
+<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Buy me a Ko-fi', '#008a09', 'Z8Z6P25B8');kofiwidget2.draw();
 </script>
 
 <div class="accordion">
