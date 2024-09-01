@@ -378,14 +378,11 @@ select, button {
     width: 100%;
     height: 100%;
 }
-
-
     </style>
 </head>
 <body>
 <header>
     <h1><a href="https://ko-fi.com/pjeaje"><span class="animate-letter">M</span>atch<span class="animate-letter">M</span>emory</a></h1>
-    <!-- <p class="subtitle">A Matching Memory Game</p> -->
 </header>
 
 <div id="controls">
@@ -409,6 +406,7 @@ select, button {
             <option value="1000" selected>Normal</option>
             <option value="500">Fast</option>
             <option value="100">Blink</option>
+            <option value="manual">Manual</option>
         </select>
     </div>
 </div>
@@ -458,6 +456,7 @@ let isLoading = false;
 let startTime;
 let timerInterval;
 let gameEnded = false;
+let manualFlipMode = false;
 
 async function fetchIcons() {
     try {
@@ -470,7 +469,6 @@ async function fetchIcons() {
         console.log('Icons loaded:', iconsArray.length);
     } catch (error) {
         console.error('Error fetching icons:', error);
-        // Fallback to a few default icons if fetch fails
         iconsArray = ['star', 'favorite', 'pets', 'home'];
     }
 }
@@ -489,7 +487,6 @@ function populateAllIconsList() {
         allIconList.appendChild(li);
     });
 
-    // Ensure the accordion content height is updated
     const accordionContent = allIconList.closest('.accordion-content');
     if (accordionContent.style.maxHeight) {
         accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
@@ -517,6 +514,7 @@ document.getElementById('speed').addEventListener('change', function() {
     if (speedLocked) {
         this.disabled = true;
     }
+    manualFlipMode = this.value === 'manual';
 });
 
 document.addEventListener('click', function(event) {
@@ -624,7 +622,6 @@ function createIconSet() {
         shuffle(iconSet);
     }
 
-    // Update the icon list (do this regardless of isLoading)
     updateIconList();
 }
 
@@ -643,7 +640,6 @@ function updateIconList() {
         iconList.appendChild(li);
     });
 
-    // Ensure the accordion content height is updated
     const accordionContent = document.querySelector('.accordion-content');
     if (accordionContent.style.maxHeight) {
         accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
@@ -696,7 +692,14 @@ function flipCard(card) {
         speedLocked = true;
     }
 
-    if (firstCard && secondCard && (matchMode === 2 || thirdCard)) return;
+    if (firstCard && secondCard && (matchMode === 2 || thirdCard)) {
+        if (manualFlipMode) {
+            resetFlip(firstCard, secondCard, thirdCard);
+            resetCards();
+        } else {
+            return;
+        }
+    }
 
     card.querySelector('div').innerHTML = `<i class="material-icons">${card.dataset.value}</i>`;
     card.style.backgroundColor = '#fff';
@@ -729,11 +732,13 @@ function checkMatch() {
     ) {
         setMatched(firstCard, secondCard, thirdCard);
     } else {
-        const speed = parseInt(document.getElementById('speed').value, 10);
-        setTimeout(() => {
-            resetFlip(firstCard, secondCard, thirdCard);
-            resetCards();
-        }, speed);
+        if (!manualFlipMode) {
+            const speed = parseInt(document.getElementById('speed').value, 10);
+            setTimeout(() => {
+                resetFlip(firstCard, secondCard, thirdCard);
+                resetCards();
+            }, speed);
+        }
     }
 }
 
@@ -753,7 +758,7 @@ function setMatched(...cards) {
 
 function resetFlip(...cards) {
     cards.forEach(card => {
-        if (card) {
+        if (card && !card.classList.contains('matched')) {
             card.querySelector('div').innerHTML = '';
             card.style.backgroundColor = getRandomColor();
             card.style.color = 'white';
@@ -803,27 +808,24 @@ function loadGameFromURL() {
             updateMatchModeOptions();
             document.getElementById('match-mode').value = matchMode.toString();
             document.getElementById('speed').value = speed;
+            manualFlipMode = speed === 'manual';
 
             isLoading = true;
             createBoard();
             isLoading = false;
             
-            // Update the icon list
             updateIconList();
             
-            // Reset attempts, matches, and timer
             attempts = 0;
             matchedSets = 0;
             document.getElementById('timer').textContent = '00:00';
             updateScore();
             
-            // Ensure the game is ready to play
             gameEnded = false;
             speedLocked = false;
             document.getElementById('speed').disabled = false;
             startTime = null;
 
-            // Calculate totalSets based on the loaded game state
             const [rows, cols] = gridSize.split('x').map(Number);
             const totalCards = rows * cols;
             totalSets = totalCards / matchMode;
