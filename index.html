@@ -280,7 +280,7 @@ select, button {
     animation: flashRed 0.5s ease-in-out;
     animation-iteration-count: 5;
 }
-.btn-container {margin-top:20px;}
+.btn-container {margin-top:10px;}
 
 #all-icon-list {
   list-style-type: none;
@@ -402,11 +402,11 @@ select, button {
     <div class="control-group">
         <label for="speed" title="Flip Speed"><i class="material-icons">speed</i></label>
         <select id="speed">
+            <option value="manual">Manual</option>
             <option value="2000">Slow</option>
             <option value="1000" selected>Normal</option>
             <option value="500">Fast</option>
             <option value="100">Blink</option>
-            <option value="manual">Manual</option>
         </select>
     </div>
 </div>
@@ -433,12 +433,12 @@ select, button {
   </div>
 </div>
 
-<div class="accordion">
+<!-- <div class="accordion">
   <button class="accordion-btn">All Icons</button>
   <div class="accordion-content">
     <ul id="all-icon-list"></ul>
   </div>
-</div>
+</div> -->
 
 <script>
 let iconsArray = [];
